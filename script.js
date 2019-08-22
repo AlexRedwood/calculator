@@ -115,6 +115,10 @@ numberButtons.forEach((btn) => {
       resetDisplay ();
       clearField = 0;
       loopThis = 0; 
+      if (secondNumberForLoop != null && firstNumber != null) {
+        secondNumberForLoop = null;
+        firstNumber = null;
+      }
     }
     
     if (parseFloat(display.textContent.replace(/[^0-9-.]/g, '')) != '0') {
@@ -122,7 +126,7 @@ numberButtons.forEach((btn) => {
       controlThousands();
       controlDisplaySize();
       if (display.textContent.length > 18) controlDisplaySize();
-    } else if (display.textContent == '0') {
+    } else if (parseFloat(display.textContent.replace(/[^0-9-.]/g, '')) == '0') {
       display.textContent = btn.textContent;
     }	
   });	
@@ -143,27 +147,39 @@ let accumulator = null;
 function addOperation() {
     if (isDididedByZero() || isTooBig()) reset();
     if (firstNumber == null && secondNumber == null){
+        console.log(firstNumber + 'x2');
         firstNumber = parseFloat(display.textContent.replace(/[^0-9-.]/g, '')); 
         log.textContent += firstNumber + this.textContent;
         clearField = 1;
+        console.log(firstNumber + 'x2');
     } else if (firstNumber != null && secondNumber == null) {
         if (accumulator != null) {
+          console.log(firstNumber + 'x3');
           firstNumber = accumulator;
           accumulator = null ;
+          console.log(firstNumber + 'x3');
         }
         if ((clearField == 1 || loopThis == 1) && log.textContent != '') {
+            console.log(firstNumber + 'x4');
             log.textContent = log.textContent.slice(0, -3) + this.textContent;
+            console.log(firstNumber + 'x4');
         } else if (clearField == 1 && log.textContent == '') {
+            console.log(firstNumber + 'x5');
             log.textContent += firstNumber + this.textContent;
             secondNumberForLoop = null;
+            console.log(firstNumber + 'x5');
         } else if (clearField != 1) {
+            console.log(firstNumber + 'x6');
             secondNumber = parseFloat(display.textContent.replace(/[^0-9-.]/g, '')); 
             display.textContent = operate(firstNumber, secondNumber, log.textContent.slice(-3));
+            console.log(firstNumber + 'x6');
             if (isDididedByZero()) return;
             log.textContent +=  secondNumber + this.textContent;
+            console.log(firstNumber + 'x6');
             clearField = 1;
             firstNumber = parseFloat(display.textContent.replace(/[^0-9-.]/g, '')); 
             secondNumber = null;
+            console.log(firstNumber + 'x6');
       }
     }
     controlLogSize();
@@ -223,6 +239,11 @@ equal.addEventListener('click', equalFunc);
 const CE = document.getElementById('CE');
 const C = document.getElementById('C');
 const backspace = document.getElementById('backspace');
+const plusMinus = document.getElementById('plusMinus');
+const percent = document.getElementById('percent');
+const sqrt = document.getElementById('sqrt');
+const sqr = document.getElementById('sqr');
+const fraction = document.getElementById('fraction');
 
 C.addEventListener('click', reset);
 CE.addEventListener('click', resetDisplay);
@@ -231,5 +252,19 @@ backspace.addEventListener('click', () => {
     display.textContent = 0;
   } else {
   display.textContent = display.textContent.slice(0, -1)
+  }
+});
+
+plusMinus.addEventListener('click', () => {
+  if (display.textContent == 0) {
+      return;
+  } else if (display.textContent != 0 && display.textContent.slice(0,1) == '-') {
+      display.textContent = display.textContent.slice(1);   
+  } else {
+      display.textContent = '-' + display.textContent;    
+  }
+  if (secondNumberForLoop != null || accumulator != null) {
+      secondNumberForLoop = secondNumberForLoop - (2 * secondNumberForLoop);
+      accumulator = accumulator - (2 * accumulator);
   }
 });
