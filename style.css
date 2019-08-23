@@ -49,7 +49,16 @@ html{
 height: 100%; 
 padding: 0;
 margin: 0; 
+}
 
+
+::selection {
+  background-color: rgb(141, 55, 104);
+  color: rgb(220, 224, 217);
+}
+::-moz-selection {
+  background-color: rgb(141, 55, 104);
+  color: rgb(220, 224, 217);
 }
 
 body {
@@ -60,6 +69,7 @@ body {
   padding-top: 20px;
   padding-bottom: 40px;
   overflow: hidden;
+
 }
 
 main {	
@@ -148,10 +158,10 @@ text-align: center;
 border-radius: 7px;
 padding: 0px;
 width: 400px;
-height: 580px;
+height: 520px;
 overflow: hidden;
 grid-template-columns: repeat(4, minmax(1px, 200px));
-grid-template-rows: 90px 80px repeat(6, minmax(60px, 70px));
+grid-template-rows: 90px 80px repeat(5, minmax(60px, 70px));
 grid-column-start: 2;
 grid-column-end: 3;
 grid-row-start: 2;

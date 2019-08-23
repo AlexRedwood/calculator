@@ -9,16 +9,6 @@ let divide = (a,b) => {
   return a / b; 
 }
 
-let power = (a , b) => (a**b);
-
-function factorial(a) {
-	if (a == 0 || a == 1) {
-		return 1;
-	} else {
-		return a * factorial(a - 1);
-	}
-}
-
 function operate (a, b, operator) {
   if (operator == ' + ') {
     return add(a,b);
@@ -78,10 +68,6 @@ function controlDisplaySize() {
       clearField = 1;
     }
 }
-// Every thousand have a , 
-function controlThousands() {
-  display.textContent = parseFloat(display.textContent.replace(/[^0-9-.]/g, '')).toLocaleString();
-}
 
 function controlLogSize() {
   while (log.textContent.length > 40) {
@@ -112,7 +98,7 @@ numberButtons.forEach((btn) => {
   btn.addEventListener('click', () => {
     if (isDididedByZero() || isTooBig()) reset();
     if (clearField == 1 || loopThis == 1) {
-      resetDisplay ();
+      if (display.textContent != '0.') resetDisplay ();
       clearField = 0;
       loopThis = 0; 
       if (secondNumberForLoop != null && firstNumber != null) {
@@ -120,15 +106,13 @@ numberButtons.forEach((btn) => {
         firstNumber = null;
       }
     }
-    
-    if (parseFloat(display.textContent.replace(/[^0-9-.]/g, '')) != '0') {
+    if (parseFloat(display.textContent) != '0' || display.textContent.search(/\./g) != -1) {
       display.textContent += btn.textContent;
-      controlThousands();
       controlDisplaySize();
       if (display.textContent.length > 18) controlDisplaySize();
-    } else if (parseFloat(display.textContent.replace(/[^0-9-.]/g, '')) == '0') {
+    } else if (parseFloat(display.textContent) == '0' && display.textContent.search(/\./g) == -1) {
       display.textContent = btn.textContent;
-    }	
+    }
   });	
 });
   
@@ -147,43 +131,32 @@ let accumulator = null;
 function addOperation() {
     if (isDididedByZero() || isTooBig()) reset();
     if (firstNumber == null && secondNumber == null){
-        console.log(firstNumber + 'x2');
-        firstNumber = parseFloat(display.textContent.replace(/[^0-9-.]/g, '')); 
+        firstNumber = parseFloat(display.textContent); 
         log.textContent += firstNumber + this.textContent;
         clearField = 1;
-        console.log(firstNumber + 'x2');
     } else if (firstNumber != null && secondNumber == null) {
         if (accumulator != null) {
-          console.log(firstNumber + 'x3');
           firstNumber = accumulator;
           accumulator = null ;
-          console.log(firstNumber + 'x3');
         }
         if ((clearField == 1 || loopThis == 1) && log.textContent != '') {
-            console.log(firstNumber + 'x4');
-            log.textContent = log.textContent.slice(0, -3) + this.textContent;
-            console.log(firstNumber + 'x4');
-        } else if (clearField == 1 && log.textContent == '') {
-            console.log(firstNumber + 'x5');
+            log.textContent = log.textContent.slice(0, -3) + this.textContent;             
+        } else if (clearField == 1 && log.textContent == '') {             
             log.textContent += firstNumber + this.textContent;
-            secondNumberForLoop = null;
-            console.log(firstNumber + 'x5');
-        } else if (clearField != 1) {
-            console.log(firstNumber + 'x6');
-            secondNumber = parseFloat(display.textContent.replace(/[^0-9-.]/g, '')); 
-            display.textContent = operate(firstNumber, secondNumber, log.textContent.slice(-3));
-            console.log(firstNumber + 'x6');
+            secondNumberForLoop = null;             
+        } else if (clearField != 1) {            
+            secondNumber = parseFloat(display.textContent); 
+            display.textContent = operate(firstNumber, secondNumber, log.textContent.slice(-3));            
             if (isDididedByZero()) return;
-            log.textContent +=  secondNumber + this.textContent;
-            console.log(firstNumber + 'x6');
+            log.textContent +=  secondNumber + this.textContent; 
             clearField = 1;
-            firstNumber = parseFloat(display.textContent.replace(/[^0-9-.]/g, '')); 
+            firstNumber = parseFloat(display.textContent); 
             secondNumber = null;
-            console.log(firstNumber + 'x6');
+            
       }
     }
     controlLogSize();
-    controlThousands();
+    
     controlDisplaySize();
 };
 
@@ -192,41 +165,36 @@ let equalFunc = () => {
   if (isDididedByZero() || isTooBig()) reset();
   if (firstNumber != null && secondNumber == null && secondNumberForLoop == null ) {
       if (clearField == 0 && loopThis != 1 ) {
-        secondNumber = parseFloat(display.textContent.replace(/[^0-9-.]/g, '')); 
-        secondNumberForLoop = parseFloat(display.textContent.replace(/[^0-9-.]/g, ''));
+        secondNumber = parseFloat(display.textContent); 
+        secondNumberForLoop = parseFloat(display.textContent);
         operator = log.textContent.slice(-3);
         display.textContent = operate(firstNumber, secondNumber, operator );
         if (isDididedByZero() || isTooBig()) return;
-        controlThousands();
-        controlDisplaySize();
         clearField = 1;
-        firstNumber = parseFloat(display.textContent.replace(/[^0-9-.]/g, '')); 
+        firstNumber = parseFloat(display.textContent); 
         resetLog ();
         secondNumber = null;
       } else if (clearField == 1 || loopThis == 1) {
         if (accumulator != null) {
           display.textContent = operate(accumulator, firstNumber, log.textContent.slice(-3));
           log.textContent +=  firstNumber + log.textContent.slice(-3);
-          controlLogSize();
         } else {4
           display.textContent = operate(firstNumber, firstNumber,log.textContent.slice(-3));
-          log.textContent +=  firstNumber + log.textContent.slice(-3);
-          controlLogSize();
+          log.textContent +=  firstNumber + log.textContent.slice(-3)
         }
         if (isDididedByZero() || isTooBig()) return;
-        controlDisplaySize();
-        controlThousands();
         clearField = 0;
         loopThis = 1; 
-        accumulator = parseFloat(display.textContent.replace(/[^0-9-.]/g, '')); 
+        accumulator = parseFloat(display.textContent); 
         }
   } else if (display.textContent != null && firstNumber != null && secondNumber == null && secondNumberForLoop != null){
         display.textContent = operate(firstNumber, secondNumberForLoop, operator);
         if (isDididedByZero() || isTooBig()) return;
-        controlDisplaySize();
-        controlThousands();
-        firstNumber = parseFloat(display.textContent.replace(/[^0-9-.]/g, '')); 
+        firstNumber = parseFloat(display.textContent); 
     }
+    controlLogSize();
+    
+    controlDisplaySize();
 };
 
 let operations = {plus, minus, division, multiplication};
@@ -240,10 +208,11 @@ const CE = document.getElementById('CE');
 const C = document.getElementById('C');
 const backspace = document.getElementById('backspace');
 const plusMinus = document.getElementById('plusMinus');
-const percent = document.getElementById('percent');
-const sqrt = document.getElementById('sqrt');
-const sqr = document.getElementById('sqr');
-const fraction = document.getElementById('fraction');
+const dot = document.getElementById('dot');
+//const percent = document.getElementById('percent');
+//const sqrt = document.getElementById('sqrt');
+//const sqr = document.getElementById('sqr');
+//const fraction = document.getElementById('fraction');
 
 C.addEventListener('click', reset);
 CE.addEventListener('click', resetDisplay);
@@ -266,5 +235,13 @@ plusMinus.addEventListener('click', () => {
   if (secondNumberForLoop != null || accumulator != null) {
       secondNumberForLoop = secondNumberForLoop - (2 * secondNumberForLoop);
       accumulator = accumulator - (2 * accumulator);
+  }
+});
+
+dot.addEventListener('click', () => {
+  if (display.textContent.search(/\./g) == -1 && clearField == 0) {
+      display.textContent += '.';   
+  } else if (clearField == 1 && log.textContent != '') {
+      display.textContent = '0.';    
   }
 });
