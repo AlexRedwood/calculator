@@ -45,6 +45,7 @@ function reset() {
   loopThis = 0;
   secondNumberForLoop= null;
   operator = null;
+  showValues('reset');
 }
 
 function resetDisplay () {
@@ -93,10 +94,14 @@ function isTooBig() {
   return false;
 }
 
+function showValues(ping = '') {
+  console.table([['firstNumber',firstNumber],['secondNumber', secondNumber] , ['clearField', clearField],['loopThis', loopThis] ,['secondNumberForLoop', secondNumberForLoop], ['accumulator', accumulator],['operator',operator], ['x', ping]])
+}
 
 numberButtons.forEach((btn) => {
   btn.addEventListener('click', () => {
     if (isDididedByZero() || isTooBig()) reset();
+    showValues('n1');
     if (clearField == 1 || loopThis == 1) {
       if (display.textContent != '0.') resetDisplay ();
       clearField = 0;
@@ -105,13 +110,16 @@ numberButtons.forEach((btn) => {
         secondNumberForLoop = null;
         firstNumber = null;
       }
+      showValues('n2');
     }
     if (parseFloat(display.textContent) != '0' || display.textContent.search(/\./g) != -1) {
       display.textContent += btn.textContent;
       controlDisplaySize();
+      showValues('n3');
       if (display.textContent.length > 18) controlDisplaySize();
     } else if (parseFloat(display.textContent) == '0' && display.textContent.search(/\./g) == -1) {
       display.textContent = btn.textContent;
+      showValues('n4');
     }
   });	
 });
@@ -129,29 +137,38 @@ let secondNumberForLoop = null;
 let accumulator = null;
 
 function addOperation() {
+    
     if (isDididedByZero() || isTooBig()) reset();
+    showValues('o1');
     if (firstNumber == null && secondNumber == null){
         firstNumber = parseFloat(display.textContent); 
         log.textContent += firstNumber + this.textContent;
         clearField = 1;
+        showValues('o2');
     } else if (firstNumber != null && secondNumber == null) {
+      showValues('o3');
         if (accumulator != null) {
           firstNumber = accumulator;
           accumulator = null ;
         }
+        showValues('o4');
         if ((clearField == 1 || loopThis == 1) && log.textContent != '') {
-            log.textContent = log.textContent.slice(0, -3) + this.textContent;             
+            log.textContent = log.textContent.slice(0, -3) + this.textContent;  
+            showValues('o5');           
         } else if (clearField == 1 && log.textContent == '') {             
             log.textContent += firstNumber + this.textContent;
-            secondNumberForLoop = null;             
+            secondNumberForLoop = null;            
+            showValues('o6');        
         } else if (clearField != 1) {            
             secondNumber = parseFloat(display.textContent); 
+            showValues('o7'); 
             display.textContent = operate(firstNumber, secondNumber, log.textContent.slice(-3));            
             if (isDididedByZero()) return;
             log.textContent +=  secondNumber + this.textContent; 
             clearField = 1;
             firstNumber = parseFloat(display.textContent); 
             secondNumber = null;
+            showValues('o8');   
             
       }
     }
@@ -163,34 +180,51 @@ function addOperation() {
 
 let equalFunc = () => {
   if (isDididedByZero() || isTooBig()) reset();
+  showValues('e1');   
   if (firstNumber != null && secondNumber == null && secondNumberForLoop == null ) {
       if (clearField == 0 && loopThis != 1 ) {
+        showValues('e2');  
         secondNumber = parseFloat(display.textContent); 
         secondNumberForLoop = parseFloat(display.textContent);
         operator = log.textContent.slice(-3);
+        showValues('e3');  
         display.textContent = operate(firstNumber, secondNumber, operator );
         if (isDididedByZero() || isTooBig()) return;
         clearField = 1;
-        firstNumber = parseFloat(display.textContent); 
+        firstNumber = parseFloat(display.textContent);
+        showValues('e4');   
         resetLog ();
         secondNumber = null;
+        showValues('e5');  
       } else if (clearField == 1 || loopThis == 1) {
+        showValues('e6');  
         if (accumulator != null) {
           display.textContent = operate(accumulator, firstNumber, log.textContent.slice(-3));
           log.textContent +=  firstNumber + log.textContent.slice(-3);
-        } else {4
-          display.textContent = operate(firstNumber, firstNumber,log.textContent.slice(-3));
-          log.textContent +=  firstNumber + log.textContent.slice(-3)
+          showValues('e7');  
+        } else {
+          if (display.textContent.slice(0,1) == '-') {
+            display.textContent = operate(firstNumber, -firstNumber,log.textContent.slice(-3));
+            firstNumber = -firstNumber;
+            log.textContent +=  firstNumber + log.textContent.slice(-3)
+            showValues('e8');  
+          } else {
+            display.textContent = operate(firstNumber, firstNumber,log.textContent.slice(-3));
+            log.textContent +=  firstNumber + log.textContent.slice(-3)
+            showValues('e9'); 
+          }
         }
         if (isDididedByZero() || isTooBig()) return;
         clearField = 0;
         loopThis = 1; 
         accumulator = parseFloat(display.textContent); 
+        showValues('e10');  
         }
-  } else if (display.textContent != null && firstNumber != null && secondNumber == null && secondNumberForLoop != null){
+  }  else if (display.textContent != null && firstNumber != null && secondNumber == null && secondNumberForLoop != null){
         display.textContent = operate(firstNumber, secondNumberForLoop, operator);
         if (isDididedByZero() || isTooBig()) return;
         firstNumber = parseFloat(display.textContent); 
+        showValues('e11');  
     }
     controlLogSize();
     
@@ -241,7 +275,8 @@ plusMinus.addEventListener('click', () => {
 dot.addEventListener('click', () => {
   if (display.textContent.search(/\./g) == -1 && clearField == 0) {
       display.textContent += '.';   
-  } else if (clearField == 1 && log.textContent != '') {
+  } else if (clearField == 1 && log.textContent != '' || clearField == 1 && secondNumberForLoop != null || clearField == 1 && accumulator != null)  {
       display.textContent = '0.';    
+      clearField = 0;
   }
 });
